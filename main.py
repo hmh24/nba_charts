@@ -53,23 +53,28 @@ def get_shotchart(name, season, clutch=False):
     right_corner = Rectangle((220, -47.5), 0, 137, linewidth=2, color="black")
     ax.add_patch(right_corner)
 
-    # plot shots
+    # plot shots and add title
     if clutch:
         missed_shots = detail[(detail["EVENT_TYPE"] == "Missed Shot") & (detail["MINUTES_REMAINING"] < 3) &
                               (detail["PERIOD"] == 4)][["LOC_X", "LOC_Y"]]
         made_shots = detail[(detail["EVENT_TYPE"] == "Made Shot") & (detail["MINUTES_REMAINING"] < 3) &
                             (detail["PERIOD"] == 4)][["LOC_X", "LOC_Y"]]
+        clutch_percentage = round(len(made_shots)/(len(made_shots) + len(missed_shots)), 2)
+        title = f"{name} {season} Regular Season, Clutch FG% = {clutch_percentage}"
     else:
         missed_shots = detail[detail["EVENT_TYPE"] == "Missed Shot"][["LOC_X", "LOC_Y"]]
         made_shots = detail[detail["EVENT_TYPE"] == "Made Shot"][["LOC_X", "LOC_Y"]]
+        fg_percentage = round(len(made_shots)/(len(made_shots) + len(missed_shots)), 3)
+        title = f"{name} {season} Regular Season, FG% = {fg_percentage}"
 
     ax.scatter(missed_shots["LOC_X"], missed_shots["LOC_Y"], s=50, color="red", marker="x", linewidths=1)
     ax.scatter(made_shots["LOC_X"], made_shots["LOC_Y"], s=50, edgecolor="green", facecolor="none", marker="o",
                linewidths=1)
 
+    plt.title(title)
     plt.show()
 
 
 if __name__ == '__main__':
     # data available for 96-97 onwards
-    get_shotchart("Lebron James", "2021-22", clutch=False)
+    get_shotchart("Demar Derozan", "2021-22", clutch=True)
